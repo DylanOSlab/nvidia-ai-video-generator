@@ -162,7 +162,53 @@ def fetch_image(prompt: str, out_path: Path, width=CANVAS_W, height=CANVAS_H, re
             if attempt < retries:
                 time.sleep(3 * attempt)
 
-    raise RuntimeError(f"Failed to fetch image for prompt {prompt!r}: {last_error}")
+    # The legacy anonymous Pollinations endpoint can return HTTP 402 when its
+    # shared-IP queue is full. Do not abort the whole video in that case.
+    # Create a clean fallback background in the GitHub runner so narration,
+    # animation, audio, and artifact upload can still complete.
+    print(f"  [image] all remote attempts failed: {last_error}")
+    print("  [image] using a generated fallback background for this scene")
+
+    from PIL import ImageDraw, ImageFilter
+
+    fallback = Image.new("RGB", (width, height), (28, 38, 58))
+    pixels = fallback.load()
+    seed_value = sum(ord(ch) for ch in prompt) % 360
+    color_a = (
+        35 + seed_value % 55,
+        55 + (seed_value * 2) % 70,
+        85 + (seed_value * 3) % 90,
+    )
+    color_b = (
+        95 + (seed_value * 5) % 90,
+        55 + (seed_value * 7) % 80,
+        80 + (seed_value * 11) % 100,
+    )
+    for y in range(height):
+        mix = y / max(height - 1, 1)
+        row_color = tuple(
+            int(color_a[channel] * (1 - mix) + color_b[channel] * mix)
+            for channel in range(3)
+        )
+        for x in range(width):
+            pixels[x, y] = row_color
+
+    draw = ImageDraw.Draw(fallback, "RGBA")
+    rng = random.Random(seed_value)
+    for _ in range(18):
+        radius = rng.randint(80, 320)
+        x = rng.randint(-radius, width + radius)
+        y = rng.randint(-radius, height + radius)
+        color = (
+            rng.randint(120, 255),
+            rng.randint(100, 230),
+            rng.randint(130, 255),
+            rng.randint(18, 55),
+        )
+        draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=color)
+
+    fallback = fallback.filter(ImageFilter.GaussianBlur(radius=28))
+    fallback.save(out_path, format="JPEG", quality=92)
 
 
 def run(cmd, **kwargs):
