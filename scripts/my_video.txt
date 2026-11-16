@@ -1,0 +1,14 @@
+VOICE: vi-VN-HoaiMyNeural
+MUSIC:
+
+---
+IMAGE: Hanoi old quarter street in gentle morning light, cinematic photography, no text
+Buổi sáng ở Hà Nội bắt đầu bằng những con phố còn yên tĩnh và ánh nắng nhẹ xuyên qua hàng cây.
+
+---
+IMAGE: Vietnamese coffee dripping into a glass, warm cafe interior, cinematic close-up, no text
+Một ly cà phê nhỏ giọt chậm rãi, mở đầu cho nhịp sống quen thuộc giữa lòng thành phố.
+
+---
+IMAGE: Hoan Kiem Lake at sunrise, calm water, soft golden light, cinematic photography, no text
+Bên hồ Hoàn Kiếm, mặt nước phản chiếu ánh bình minh, tạo nên một khoảng lặng giữa đô thị đông đúc.
