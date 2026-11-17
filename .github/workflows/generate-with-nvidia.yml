@@ -4,21 +4,19 @@ on:
   workflow_dispatch:
     inputs:
       topic:
-        description: "Chủ đề video"
+        description: "Chu de video"
         required: true
         type: string
-
       language:
-        description: "Ngôn ngữ lời đọc"
+        description: "Ngon ngu loi doc"
         required: true
         default: "Vietnamese"
         type: choice
         options:
           - Vietnamese
           - English
-
       voice:
-        description: "Giọng Edge TTS"
+        description: "Giong Edge TTS"
         required: true
         default: "vi-VN-HoaiMyNeural"
         type: choice
@@ -27,29 +25,26 @@ on:
           - vi-VN-NamMinhNeural
           - en-US-AriaNeural
           - en-US-GuyNeural
-
       scenes:
-        description: "Số cảnh"
+        description: "So canh"
         required: true
-        default: "6"
+        default: "4"
         type: choice
         options:
           - "4"
           - "6"
           - "8"
-
       duration:
-        description: "Thời lượng dự kiến"
+        description: "Thoi luong du kien"
         required: true
-        default: "50"
+        default: "30"
         type: choice
         options:
           - "30"
           - "50"
           - "60"
-
       style:
-        description: "Phong cách hình ảnh"
+        description: "Phong cach hinh anh"
         required: true
         default: "cinematic, realistic, modern, high detail"
         type: string
@@ -101,8 +96,7 @@ jobs:
             --output scripts/generated_script.txt
 
       - name: Preview generated script
-        run: |
-          sed -n '1,220p' scripts/generated_script.txt
+        run: sed -n '1,220p' scripts/generated_script.txt
 
       - name: Create output directory
         run: mkdir -p output
@@ -112,9 +106,7 @@ jobs:
           python generate_video.py \
             --script scripts/generated_script.txt \
             --out output/final_video.mp4 \
-            --voice "${{ inputs.voice }}" \
-            --width 1080 \
-            --height 1920
+            --voice "${{ inputs.voice }}"
 
       - name: Verify output
         run: |
