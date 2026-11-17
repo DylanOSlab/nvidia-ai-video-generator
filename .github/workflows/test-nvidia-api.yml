@@ -1,0 +1,42 @@
+name: Test NVIDIA API
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Call NVIDIA chat completion
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          NVIDIA_MODEL: ${{ vars.NVIDIA_MODEL }}
+        run: |
+          test -n "$NVIDIA_API_KEY"
+          test -n "$NVIDIA_MODEL"
+
+          response="$(
+            curl --fail-with-body --silent --show-error \
+              https://integrate.api.nvidia.com/v1/chat/completions \
+              -H "Authorization: Bearer $NVIDIA_API_KEY" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"model\": \"$NVIDIA_MODEL\",
+                \"messages\": [
+                  {
+                    \"role\": \"user\",
+                    \"content\": \"Trả lời đúng một từ: OK\"
+                  }
+                ],
+                \"temperature\": 0,
+                \"max_tokens\": 20,
+                \"stream\": false
+              }"
+          )"
+
+          echo "$response" | python -m json.tool
